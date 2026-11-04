@@ -2,6 +2,7 @@
 
 import json
 import logging
+import os
 import time
 from enum import IntEnum
 from functools import lru_cache
@@ -10,6 +11,7 @@ from typing import Literal
 import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
@@ -22,6 +24,25 @@ app = FastAPI(
     title="GridCast",
     version="0.1.0",
     description="Historical CAISO research terminal; not a live dispatch service.",
+)
+
+
+def configured_origins():
+    value = os.getenv(
+        "GRIDCAST_CORS_ORIGINS",
+        "https://gridcast.rjbassig.dev,https://rjbassig.dev,http://localhost:3000,http://127.0.0.1:3000",
+    )
+    return [origin.strip().rstrip("/") for origin in value.split(",") if origin.strip()]
+
+
+REPLAY_ONLY = os.getenv("GRIDCAST_REPLAY_ONLY", "false").lower() in {"1", "true", "yes"}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=configured_origins(),
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+    max_age=600,
 )
 log = logging.getLogger("gridcast.api")
 Target = Literal["demand", "price"]
@@ -147,7 +168,7 @@ def feature_row(req):
 @app.get("/health")
 def health():
     ready = (root / "experiments/results/summary.json").exists()
-    return {"status": "ready" if ready else "not_ready", "live": False}
+    return {"status": "ready" if ready else "not_ready", "live": False, "replay_only": REPLAY_ONLY}
 
 
 @app.get("/api/overview")
@@ -156,7 +177,7 @@ def overview():
     return {
         "quality": s["quality"],
         "selection": s["selection"],
-        "mode": "historical research",
+        "mode": "historical replay" if REPLAY_ONLY else "historical research",
         "latest": {t: records(observations(t).tail(1))[0] for t in ["demand", "price"]},
     }
 
@@ -196,6 +217,8 @@ def origins(target: Target = "demand", horizon: Horizon = 24):
 
 @app.post("/api/forecast", response_model=ForecastResponse)
 def forecast(req: ForecastRequest):
+    if REPLAY_ONLY:
+        raise HTTPException(503, "Forecast inference is disabled in the public historical replay release")
     row, meta = resolve(req)
     x = feature_row(req)
     if row.model == "persistence":
@@ -221,6 +244,8 @@ def forecast(req: ForecastRequest):
 
 @app.post("/api/scenario")
 def scenario(req: ScenarioRequest):
+    if REPLAY_ONLY:
+        raise HTTPException(503, "Scenario inference is disabled in the public historical replay release")
     row, meta = resolve(req)
     if row.model in ["persistence", "seasonal_naive", "historical_mean", "calendar_mean"]:
         raise HTTPException(422, "Select a fitted model for feature sensitivity scenarios")

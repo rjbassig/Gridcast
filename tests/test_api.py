@@ -10,6 +10,24 @@ def test_health():
     assert client.get("/health").status_code == 200
 
 
+def test_cors_allows_public_dashboard_origin_only():
+    response = client.options(
+        "/api/overview",
+        headers={
+            "Origin": "https://gridcast.rjbassig.dev",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "https://gridcast.rjbassig.dev"
+
+    denied = client.options(
+        "/api/overview",
+        headers={"Origin": "https://untrusted.example", "Access-Control-Request-Method": "GET"},
+    )
+    assert denied.headers.get("access-control-allow-origin") is None
+
+
 def test_invalid_request_validation():
     assert (
         client.post("/api/forecast", json={"target": "fake", "horizon": -1, "issue_time": "bad"}).status_code

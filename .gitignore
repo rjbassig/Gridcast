@@ -27,6 +27,7 @@ data/interim/
 data/processed/
 artifacts/
 experiments/results/*.parquet
+release/
 
 # Temporary files and local caches
 work/

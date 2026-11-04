@@ -103,10 +103,19 @@ Configuration lives in `configs/default.yaml`. Overrides use `--config path/to/c
 
 ## Run the application
 
-Two terminals, both from this repository root:
+Create the local environment files once, then use two terminals from this
+repository root:
+
+```bash
+cp .env.example .env
+cp dashboard/.env.example dashboard/.env.local
+```
+
+In the API terminal, export the backend configuration before starting Uvicorn:
 
 ```bash
 source .venv/bin/activate
+set -a && source .env && set +a
 ./scripts/python.sh -m uvicorn api.main:app --host 127.0.0.1 --port 8000
 ```
 
@@ -151,3 +160,5 @@ Next priorities: real publication/revision vintages, gate-closure-aware DAM task
 ## GitHub distribution
 
 The public repository includes source code, configuration examples, acquisition and training pipelines, tests, the dashboard, documentation, screenshots, verified summary metrics and the technical report. Raw/processed datasets, trained model artifacts and the bulky per-origin predictions Parquet are intentionally excluded, along with dependencies, build outputs, real environment files, virtual environments and temporary files. Local copies are preserved. Run the reproduction commands above to regenerate the excluded files before starting the full application or API integration tests.
+
+For the separated public application, see the exact [deployment guide](docs/deployment.md). The first public architecture uses a Vercel dashboard and a FastAPI replay service with an immutable, private release bundle; it retains real historical data while avoiding continuous public inference. No deployment is created by this repository.
