@@ -1,0 +1,4 @@
+# Preserve generated analytical documents and images as binary assets.
+*.pdf binary
+*.png binary
+*.parquet binary

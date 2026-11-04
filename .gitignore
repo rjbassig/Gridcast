@@ -1,0 +1,41 @@
+# Frontend dependencies and build outputs
+node_modules/
+.next/
+*.tsbuildinfo
+
+# Environment files; retain documented examples
+.env*
+!.env.example
+
+# Python environments, bytecode and tooling caches
+.venv/
+.venv*/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local datasets, generated models and bulky per-origin predictions
+# Keep ingestion/training scripts and compact verified metrics/reports in Git.
+data/raw/
+data/interim/
+data/processed/
+artifacts/
+experiments/results/*.parquet
+
+# Temporary files and local caches
+work/
+tmp/
+temp/
+.cache/
+*.log
+*.tmp
+*.temp
+*.bak
+.DS_Store
+.ipynb_checkpoints/

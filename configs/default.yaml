@@ -1,0 +1,25 @@
+data:
+  start: "2024-01-01"
+  end: "2026-01-01"
+  chunk_days: 28
+  request_pause_seconds: 5
+  endpoint: https://oasis.caiso.com/oasisapi/SingleZip
+  demand_area: CA ISO-TAC
+  price_node: TH_NP15_GEN-APND
+availability:
+  demand_delay_hours: 3
+  price_delay_hours: 48
+experiment:
+  horizons: [1, 6, 24, 48, 168]
+  validation_start: "2025-01-01"
+  test_start: "2025-07-01"
+  minimum_train_hours: 4000
+  seed: 42
+  calibration_hours: 720
+  calibration_gap_hours: 168
+  coverage: 0.9
+  models: [ridge, xgboost, lightgbm, seasonal_ar, gru]
+  ridge_alpha: [1.0, 100.0]
+  gru_epochs: 5
+  gru_hidden: 24
+  train_stride: 3

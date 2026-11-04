@@ -1,0 +1,15 @@
+{
+  "selection": {
+    "demand_1": "ridge_1",
+    "demand_6": "lightgbm",
+    "demand_24": "lightgbm",
+    "demand_48": "lightgbm",
+    "demand_168": "xgboost",
+    "price_1": "ridge_100",
+    "price_6": "ridge_1",
+    "price_24": "ridge_100",
+    "price_48": "ridge_100",
+    "price_168": "ridge_1"
+  },
+  "config_sha256": "f5a0334e86e53bb678f3cd1f25661997dad21299c72cef36a952d6411daeba43"
+}

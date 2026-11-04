@@ -1,0 +1,218 @@
+{
+  "24h_findings": [
+    "Demand: lightgbm achieves 24-hour held-out MAE 1191.45 MW, 31.2% relative MAE reduction versus weekly seasonal naive; 90% nominal interval coverage is 93.2%.",
+    "Price: ridge_100 achieves 24-hour held-out MAE 6.03 USD/MWh, 7.1% relative MAE reduction versus weekly seasonal naive; 90% nominal interval coverage is 90.7%."
+  ],
+  "selected_results": [
+    {
+      "target": "demand",
+      "horizon": 1,
+      "model": "ridge_1",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4414,
+      "mae": 871.4470656462793,
+      "rmse": 1129.901862234183,
+      "bias": 30.625125018841107,
+      "smape": 3.1670811987572867,
+      "mase": 0.5115580686898603,
+      "p95_absolute_error": 2330.068026744511,
+      "coverage": 0.8998640688717716,
+      "mean_interval_width": 3793.188166169348,
+      "mae_ci95": [
+        818.9567984673873,
+        936.4043543791723
+      ],
+      "training_seconds": 0.007442541071213782
+    },
+    {
+      "target": "demand",
+      "horizon": 6,
+      "model": "lightgbm",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4404,
+      "mae": 1055.87136820755,
+      "rmse": 1411.9301735271004,
+      "bias": -125.05093024171528,
+      "smape": 3.773354262039976,
+      "mase": 0.6198190793202092,
+      "p95_absolute_error": 3002.0486807937077,
+      "coverage": 0.9296094459582198,
+      "mean_interval_width": 5491.422631457233,
+      "mae_ci95": [
+        972.795366430295,
+        1151.8674687134917
+      ],
+      "training_seconds": 0.2507784590125084
+    },
+    {
+      "target": "demand",
+      "horizon": 24,
+      "model": "lightgbm",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4368,
+      "mae": 1191.4458994521237,
+      "rmse": 1638.8812703830208,
+      "bias": -64.48413658567917,
+      "smape": 4.216449727549168,
+      "mase": 0.6994042292404433,
+      "p95_absolute_error": 3455.226253516049,
+      "coverage": 0.9317765567765568,
+      "mean_interval_width": 6555.540377843237,
+      "mae_ci95": [
+        1056.3997419963507,
+        1357.3442517771475
+      ],
+      "training_seconds": 0.2455662499414757
+    },
+    {
+      "target": "demand",
+      "horizon": 48,
+      "model": "lightgbm",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4320,
+      "mae": 1525.2749088967732,
+      "rmse": 2114.0000454320675,
+      "bias": -102.90520264197082,
+      "smape": 5.339046891279955,
+      "mase": 0.8953689987327889,
+      "p95_absolute_error": 4448.91005684399,
+      "coverage": 0.924074074074074,
+      "mean_interval_width": 8033.012678667456,
+      "mae_ci95": [
+        1271.938979897019,
+        1832.8239420971418
+      ],
+      "training_seconds": 0.24365983391180634
+    },
+    {
+      "target": "demand",
+      "horizon": 168,
+      "model": "xgboost",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4080,
+      "mae": 1731.291525926777,
+      "rmse": 2402.3102921985496,
+      "bias": -104.61659294577206,
+      "smape": 6.062583135062628,
+      "mase": 1.0163051598382586,
+      "p95_absolute_error": 4981.689160156247,
+      "coverage": 0.9362745098039216,
+      "mean_interval_width": 9831.339857153798,
+      "mae_ci95": [
+        1409.5591242921118,
+        2127.053561700994
+      ],
+      "training_seconds": 0.17101745796389878
+    },
+    {
+      "target": "price",
+      "horizon": 1,
+      "model": "ridge_100",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4414,
+      "mae": 5.841015324913624,
+      "rmse": 7.5252006432305985,
+      "bias": 3.122219755499003,
+      "smape": 14.3326223172943,
+      "mase": 0.4741962937301445,
+      "p95_absolute_error": 14.311224480554257,
+      "coverage": 0.9179882193022202,
+      "mean_interval_width": 25.495229177788687,
+      "mae_ci95": [
+        5.376700190850731,
+        6.299626556532784
+      ],
+      "training_seconds": 0.00630237499717623
+    },
+    {
+      "target": "price",
+      "horizon": 6,
+      "model": "ridge_1",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4404,
+      "mae": 6.250063944211816,
+      "rmse": 7.99871076559549,
+      "bias": 3.155907298590708,
+      "smape": 15.282150339769471,
+      "mase": 0.5074044482096064,
+      "p95_absolute_error": 15.365393580900543,
+      "coverage": 0.9141689373297003,
+      "mean_interval_width": 27.140996625367418,
+      "mae_ci95": [
+        5.719963934551884,
+        6.787797398445528
+      ],
+      "training_seconds": 0.007382416049949825
+    },
+    {
+      "target": "price",
+      "horizon": 24,
+      "model": "ridge_100",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4368,
+      "mae": 6.026181447675017,
+      "rmse": 7.793257710341913,
+      "bias": 3.3510056584928045,
+      "smape": 14.87780154490612,
+      "mase": 0.48922879822697735,
+      "p95_absolute_error": 15.218373808608064,
+      "coverage": 0.907051282051282,
+      "mean_interval_width": 25.501074428666637,
+      "mae_ci95": [
+        5.413148705466714,
+        6.693045751597872
+      ],
+      "training_seconds": 0.006863293121568859
+    },
+    {
+      "target": "price",
+      "horizon": 48,
+      "model": "ridge_100",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4320,
+      "mae": 6.6041042276447195,
+      "rmse": 8.412933461443066,
+      "bias": 4.0753121624270605,
+      "smape": 16.120797134679854,
+      "mase": 0.5361468124898328,
+      "p95_absolute_error": 16.236582134473768,
+      "coverage": 0.8881944444444444,
+      "mean_interval_width": 26.096475772177257,
+      "mae_ci95": [
+        5.81731895296564,
+        7.409221298990176
+      ],
+      "training_seconds": 0.006622957997024059
+    },
+    {
+      "target": "price",
+      "horizon": 168,
+      "model": "ridge_1",
+      "split": "test",
+      "selected_on_validation": true,
+      "n": 4080,
+      "mae": 6.3570109143209095,
+      "rmse": 8.317293961256974,
+      "bias": 2.051035170797141,
+      "smape": 15.621323230855863,
+      "mase": 0.5160868183165792,
+      "p95_absolute_error": 17.173896995497195,
+      "coverage": 0.8541666666666666,
+      "mean_interval_width": 23.85780118293747,
+      "mae_ci95": [
+        5.2720977087145675,
+        7.42353059354274
+      ],
+      "training_seconds": 0.0071066259406507015
+    }
+  ]
+}

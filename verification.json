@@ -1,0 +1,62 @@
+{
+  "release": "0.1.0",
+  "verified_at_utc": "2026-11-04T21:32:17.701597+00:00",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "python": "3.13.1",
+  "dataset": {
+    "source": "CAISO OASIS",
+    "targets": {
+      "demand": {
+        "rows": 17543,
+        "expected_rows": 17544,
+        "missing_hours": 1,
+        "missing_timestamps": [
+          "2024-08-31 17:00:00+00:00"
+        ],
+        "duplicates": 0,
+        "start": "2024-01-01 00:00:00+00:00",
+        "end": "2025-12-31 23:00:00+00:00",
+        "min": 14997.0,
+        "max": 47759.0,
+        "mean": 25631.544832696803,
+        "negative_observations": 0,
+        "iqr_outlier_count": 31,
+        "last_acquisition": "2026-11-04T21:15:20.518046+00:00",
+        "dataset_sha256": "ded00752167df2b77a03ce11f866dfd6f1c2ca114bd0130c428e52ff76ade345"
+      },
+      "price": {
+        "rows": 17544,
+        "expected_rows": 17544,
+        "missing_hours": 0,
+        "missing_timestamps": [],
+        "duplicates": 0,
+        "start": "2024-01-01 00:00:00+00:00",
+        "end": "2025-12-31 23:00:00+00:00",
+        "min": -38.47122,
+        "max": 582.63617,
+        "mean": 39.45317327747377,
+        "negative_observations": 559,
+        "iqr_outlier_count": 241,
+        "last_acquisition": "2026-11-04T21:19:43.504312+00:00",
+        "dataset_sha256": "aee62d91b9f01d57b09ae4990005b98f83b5b448a01a904d4a55b6231256b3e6"
+      }
+    }
+  },
+  "forecast_rows": 856240,
+  "python_tests": {
+    "passed": 60,
+    "warnings": 1,
+    "warning": "Starlette recommends httpx2 in a future test-client migration; current tests pass."
+  },
+  "checks": {
+    "ruff": "passed: src api tests pipelines",
+    "typescript": "passed",
+    "next_production_build": "passed",
+    "report_http": 200,
+    "browser": "Eight sections checked using Codex in-app browser; forecast inference, nonzero sensitivity, target and horizon switching verified; browser error logs empty.",
+    "mobile": "390px viewport: document width 390px; no page overflow.",
+    "pdf": "Rendered and visually inspected; reproducible ReportLab source."
+  },
+  "publication": "Local only. No public deployment, GitHub push, scheduler, portfolio change or paid infrastructure.",
+  "known_limitations_file": "docs/status.md"
+}
