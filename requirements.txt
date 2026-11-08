@@ -1,2 +1,10 @@
-# Railpack's conventional pip entry point for the public replay API.
--r requirements-runtime.txt
+# Self-contained Railpack runtime dependencies for the public replay API.
+fastapi==0.162.0
+uvicorn==0.54.0
+pandas==3.1.1
+numpy==2.5.4
+pyarrow==26.0.1
+PyYAML==6.0.3
+duckdb==2.0.0
+requests==2.34.2
+joblib==1.6.0
