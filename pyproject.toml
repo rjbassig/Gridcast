@@ -5,9 +5,10 @@ build-backend = "setuptools.build_meta"
 name = "gridcast"
 version = "0.1.0"
 requires-python = ">=3.11"
-dependencies = ["pandas>=2.2", "numpy", "scikit-learn", "requests", "pyarrow", "duckdb", "pyyaml", "fastapi", "uvicorn", "joblib", "matplotlib", "statsmodels", "xgboost", "lightgbm", "reportlab"]
+dependencies = ["pandas>=2.2", "numpy", "requests", "pyarrow", "duckdb", "pyyaml", "fastapi", "uvicorn", "joblib"]
 [project.optional-dependencies]
 dev = ["pytest", "httpx", "ruff"]
+research = ["scikit-learn", "matplotlib", "statsmodels", "xgboost", "lightgbm", "reportlab"]
 deep = ["torch"]
 [project.scripts]
 gridcast = "gridcast.cli:main"

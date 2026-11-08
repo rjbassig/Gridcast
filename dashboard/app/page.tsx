@@ -57,6 +57,7 @@ type Quality = {
 type Overview = {
   latest: Record<Target, { value: number; timestamp: string }>;
   selection: Record<string, string>;
+  replay_only: boolean;
   quality: { targets: Record<Target, Quality> };
 };
 const tabs = [
@@ -193,7 +194,7 @@ export default function Terminal() {
     [scores, setScores] = useState<Score[]>([]),
     [replay, setReplay] = useState<Point[]>([]),
     [history, setHistory] = useState<Point[]>([]),
-    [error, setError] = useState(""),
+    [errors, setErrors] = useState<Record<string, string>>({}),
     [loading, setLoading] = useState(true),
     [model, setModel] = useState(""),
     [origins, setOrigins] = useState<string[]>([]),
@@ -212,15 +213,28 @@ export default function Terminal() {
     [start, setStart] = useState("2025-12-01"),
     [end, setEnd] = useState("2026-01-01");
   const unit = target === "demand" ? "MW" : "USD/MWh";
+  const replayOnly = overview?.replay_only ?? false;
+  const error = Object.values(errors)[0] || "";
+  const setRequestError = (request: string, message?: string) => {
+    setErrors((current) => {
+      const next = { ...current };
+      if (message) next[request] = message;
+      else delete next[request];
+      return next;
+    });
+  };
   useEffect(() => {
     get<Overview>("/api/overview")
-      .then(setOverview)
-      .catch((e) => setError(e.message));
+      .then((value) => {
+        setRequestError("overview");
+        setOverview(value);
+      })
+      .catch((e) => setRequestError("overview", e.message));
   }, []);
   useEffect(() => {
     let active = true;
     setLoading(true);
-    setError("");
+    setRequestError("selection");
     setForecast(undefined);
     setScenario(undefined);
     Promise.all([
@@ -232,6 +246,7 @@ export default function Terminal() {
     ])
       .then(([s, r, o]) => {
         if (active) {
+          setRequestError("selection");
           setScores(s);
           setReplay(r);
           setOrigins(o.origins);
@@ -242,7 +257,7 @@ export default function Terminal() {
         }
       })
       .catch((e) => {
-        if (active) setError(e.message);
+        if (active) setRequestError("selection", e.message);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -257,10 +272,13 @@ export default function Terminal() {
       `/api/history/${target}?start=${start}T00:00:00Z&end=${end}T00:00:00Z&limit=20000`,
     )
       .then((j) => {
-        if (active) setHistory(j.rows);
+        if (active) {
+          setRequestError("history");
+          setHistory(j.rows);
+        }
       })
       .catch((e) => {
-        if (active) setError(e.message);
+        if (active) setRequestError("history", e.message);
       });
     return () => {
       active = false;
@@ -272,10 +290,13 @@ export default function Terminal() {
       `/api/importance?target=${target}&horizon=${horizon}&model_name=${model}`,
     )
       .then((j) => {
-        if (active) setImportance(j.rows.slice(0, 10));
+        if (active) {
+          setRequestError("importance");
+          setImportance(j.rows.slice(0, 10));
+        }
       })
       .catch((e) => {
-        if (active) setError(e.message);
+        if (active) setRequestError("importance", e.message);
       });
     return () => {
       active = false;
@@ -288,29 +309,40 @@ export default function Terminal() {
       `/api/replay?target=${target}&horizon=${horizon}&model_name=${model}`,
     )
       .then((r) => {
-        if (active) setReplay(r);
+        if (active) {
+          setRequestError("replay");
+          setReplay(r);
+        }
       })
       .catch((e) => {
-        if (active) setError(e.message);
+        if (active) setRequestError("replay", e.message);
       });
     return () => {
       active = false;
     };
   }, [target, horizon, model]);
   async function execute(isScenario = false) {
-    setError("");
+    setRequestError("action");
     try {
       const body = { target, horizon, model, issue_time: origin };
-      if (isScenario)
+      if (isScenario) {
         setScenario(
           await get("/api/scenario", {
             ...body,
             historical_level_change_pct: change,
           }),
         );
-      else setForecast(await get("/api/forecast", body));
+      } else if (replayOnly) {
+        const rows = await get<Point[]>(
+          `/api/replay?target=${target}&horizon=${horizon}&model_name=${encodeURIComponent(model)}&issue_time=${encodeURIComponent(origin)}&limit=1`,
+        );
+        if (!rows[0]) throw new Error("No stored held-out forecast is available for that selection.");
+        setForecast(rows[0] as Record<string, unknown>);
+      } else {
+        setForecast(await get("/api/forecast", body));
+      }
     } catch (e) {
-      setError((e as Error).message);
+      setRequestError("action", (e as Error).message);
     }
   }
   const selected = scores.find(
@@ -443,8 +475,7 @@ export default function Terminal() {
         </div>
         {error && (
           <div role="alert" className="error">
-            {error} · Start the API and run ingestion / experiments if results
-            are unavailable.
+            {error} · The dashboard could not load verified research data.
           </div>
         )}
         {loading && (
@@ -596,10 +627,11 @@ export default function Terminal() {
         )}
         {tab === "Forecast lab" && (
           <section className="panel">
-            <h2>Replay an eligible forecast</h2>
+            <h2>{replayOnly ? "View an eligible historical forecast" : "Replay an eligible forecast"}</h2>
             <p>
-              Uses the artifact trained before the selected held-out quarter.
-              Actual outcomes appear only for evaluation.
+              {replayOnly
+                ? "Shows the stored forecast generated before the selected held-out outcome."
+                : "Uses the artifact trained before the selected held-out quarter. Actual outcomes appear only for evaluation."}
             </p>
             {controls}
             <button
@@ -607,7 +639,7 @@ export default function Terminal() {
               disabled={!origin}
               onClick={() => execute()}
             >
-              Generate historical forecast <ArrowUpRight size={16} />
+              {replayOnly ? "View stored historical forecast" : "Generate historical forecast"} <ArrowUpRight size={16} />
             </button>
             {forecast && (
               <div className="result">
@@ -685,34 +717,42 @@ export default function Terminal() {
               seasonal anchor; runs the same fitted model again. This is feature
               sensitivity, not a causal weather forecast.
             </p>
-            {controls}
-            <label className="slider">
-              HISTORICAL LEVEL CHANGE: {change}%
-              <input
-                type="range"
-                min="-20"
-                max="20"
-                value={change}
-                onChange={(e) => {
-                  setChange(Number(e.target.value));
-                  setScenario(undefined);
-                }}
-              />
-            </label>
-            <button className="primary" onClick={() => execute(true)}>
-              Run model sensitivity
-            </button>
-            {scenario && (
-              <div className="result">
-                <strong>
-                  {fmt(scenario.scenario, 2)} {unit}
-                </strong>
-                <p>
-                  Baseline {fmt(scenario.baseline, 2)} · Change{" "}
-                  {fmt(scenario.delta, 2)} {unit}
-                </p>
-                <p>{scenario.limitation}</p>
+            {replayOnly ? (
+              <div className="notice">
+                Scenario analysis is unavailable in this public historical replay release. It intentionally excludes model checkpoints and does not represent causal interventions.
               </div>
+            ) : (
+              <>
+                {controls}
+                <label className="slider">
+                  HISTORICAL LEVEL CHANGE: {change}%
+                  <input
+                    type="range"
+                    min="-20"
+                    max="20"
+                    value={change}
+                    onChange={(e) => {
+                      setChange(Number(e.target.value));
+                      setScenario(undefined);
+                    }}
+                  />
+                </label>
+                <button className="primary" onClick={() => execute(true)}>
+                  Run model sensitivity
+                </button>
+                {scenario && (
+                  <div className="result">
+                    <strong>
+                      {fmt(scenario.scenario, 2)} {unit}
+                    </strong>
+                    <p>
+                      Baseline {fmt(scenario.baseline, 2)} · Change{" "}
+                      {fmt(scenario.delta, 2)} {unit}
+                    </p>
+                    <p>{scenario.limitation}</p>
+                  </div>
+                )}
+              </>
             )}
           </section>
         )}

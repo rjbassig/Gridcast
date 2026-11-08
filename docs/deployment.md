@@ -65,7 +65,7 @@ instead of adding it.
 ## 3. Deploy the API on Railway
 
 Railway is a practical low-operations host for the small read-only FastAPI
-service. `railway.toml` supplies the Nixpacks build and Uvicorn health check.
+service. `railway.toml` supplies the Railpack build and Uvicorn health check.
 Its cost and free-tier terms change, so check the current plan before enabling a
 paid service. Render/Fly.io with a persistent volume are equivalent alternatives.
 

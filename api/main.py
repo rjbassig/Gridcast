@@ -36,6 +36,16 @@ def configured_origins():
 
 
 REPLAY_ONLY = os.getenv("GRIDCAST_REPLAY_ONLY", "false").lower() in {"1", "true", "yes"}
+REPLAY_ARTIFACTS = (
+    "configs/default.yaml",
+    "data/processed/demand.parquet",
+    "data/processed/price.parquet",
+    "experiments/results/summary.json",
+    "experiments/results/predictions.parquet",
+    "experiments/results/importance.csv",
+    "experiments/results/segments.csv",
+    "reports/gridcast_report.pdf",
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=configured_origins(),
@@ -54,6 +64,17 @@ class Horizon(IntEnum):
     day = 24
     two_days = 48
     week = 168
+
+
+def artifact_path(relative: str):
+    path = root / relative
+    if not path.is_file():
+        raise HTTPException(503, f"Required historical replay artifact is unavailable: {relative}")
+    return path
+
+
+def missing_replay_artifacts():
+    return [relative for relative in REPLAY_ARTIFACTS if not (root / relative).is_file()]
 
 
 @app.middleware("http")
@@ -75,24 +96,19 @@ async def request_log(request: Request, call_next):
 
 @lru_cache(maxsize=1)
 def summary():
-    path = root / "experiments/results/summary.json"
-    if not path.exists():
-        raise HTTPException(503, "No verified experiment. Run gridcast train first.")
+    path = artifact_path("experiments/results/summary.json")
     return json.loads(path.read_text())
 
 
 @lru_cache(maxsize=1)
 def predictions():
     summary()
-    return pd.read_parquet(root / "experiments/results/predictions.parquet")
+    return pd.read_parquet(artifact_path("experiments/results/predictions.parquet"))
 
 
 @lru_cache(maxsize=8)
 def observations(target):
-    path = root / f"data/processed/{target}.parquet"
-    if not path.exists():
-        raise HTTPException(503, "Observations not ingested")
-    return pd.read_parquet(path)
+    return pd.read_parquet(artifact_path(f"data/processed/{target}.parquet"))
 
 
 @lru_cache(maxsize=20)
@@ -167,8 +183,18 @@ def feature_row(req):
 
 @app.get("/health")
 def health():
-    ready = (root / "experiments/results/summary.json").exists()
-    return {"status": "ready" if ready else "not_ready", "live": False, "replay_only": REPLAY_ONLY}
+    missing = missing_replay_artifacts()
+    if missing:
+        raise HTTPException(
+            503,
+            {"status": "not_ready", "live": False, "replay_only": REPLAY_ONLY, "missing_artifacts": missing},
+        )
+    return {
+        "status": "ready",
+        "live": False,
+        "replay_only": REPLAY_ONLY,
+        "missing_artifacts": [],
+    }
 
 
 @app.get("/api/overview")
@@ -178,6 +204,7 @@ def overview():
         "quality": s["quality"],
         "selection": s["selection"],
         "mode": "historical replay" if REPLAY_ONLY else "historical research",
+        "replay_only": REPLAY_ONLY,
         "latest": {t: records(observations(t).tail(1))[0] for t in ["demand", "price"]},
     }
 
@@ -271,7 +298,7 @@ def scenario(req: ScenarioRequest):
 
 @app.get("/api/importance")
 def importance(target: Target = "demand", horizon: Horizon = 24, model_name: str | None = None):
-    frame = pd.read_csv(root / "experiments/results/importance.csv")
+    frame = pd.read_csv(artifact_path("experiments/results/importance.csv"))
     name = model_name or summary()["selection"][f"{target}_{horizon}"]
     frame = frame[(frame.target == target) & (frame.horizon == horizon) & (frame.model == name)]
     return {
@@ -288,7 +315,7 @@ def quality():
 
 @app.get("/api/segments")
 def segments(target: Target = "demand", horizon: Horizon = 24, dimension: str = "season"):
-    frame = pd.read_csv(root / "experiments/results/segments.csv")
+    frame = pd.read_csv(artifact_path("experiments/results/segments.csv"))
     frame = frame[
         (frame.target == target)
         & (frame.horizon == horizon)
@@ -303,17 +330,20 @@ def replay(
     target: Target = "demand",
     horizon: Horizon = 24,
     model_name: str | None = None,
+    issue_time: str | None = None,
     limit: int = Query(168, ge=1, le=1500),
 ):
     p = predictions()
     name = model_name or summary()["selection"][f"{target}_{horizon}"]
     subset = p[(p.target == target) & (p.horizon == horizon) & (p.model == name) & (p.split == "test")]
+    if issue_time:
+        subset = subset[subset.issue_time == timestamp(issue_time)]
+        if subset.empty:
+            raise HTTPException(422, "No eligible held-out forecast for this origin/model/horizon")
     return records(subset.sort_values("issue_time").tail(limit))
 
 
 @app.get("/api/report")
 def report():
-    path = root / "reports/gridcast_report.pdf"
-    if not path.exists():
-        raise HTTPException(503, "Report not generated")
+    path = artifact_path("reports/gridcast_report.pdf")
     return FileResponse(path, media_type="application/pdf")
