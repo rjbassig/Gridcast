@@ -65,7 +65,6 @@ const tabs = [
   "Historical explorer",
   "Forecast lab",
   "Model comparison",
-  "Scenario analysis",
   "Explainability",
   "Data quality",
   "Research findings",
@@ -393,9 +392,9 @@ export default function Terminal() {
           <span>
             <Zap size={22} />
           </span>{" "}
-          GRIDCAST<i>RESEARCH TERMINAL</i>
+          GRIDCAST
         </a>
-        <div className="navlabel">WORKSPACE</div>
+        <div className="navlabel">SECTIONS</div>
         <nav>
           {tabs.map((t, i) => (
             <button
@@ -421,19 +420,18 @@ export default function Terminal() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <span className="dot" /> LOCAL RESEARCH ENVIRONMENT
+          <span className="dot" /> HISTORICAL REPLAY
           <p>
             CAISO · California
             <br />
             Historical data / 2024–2025
           </p>
-          <small>Results, never simulated observations.</small>
         </div>
       </aside>
       <main>
         <header>
           <span>
-            ENERGY INTELLIGENCE <span className="slash">/</span> CALIFORNIA
+            GRIDCAST <span className="slash">/</span> CALIFORNIA
           </span>
           <div className="badge">
             <span className="dot" /> HISTORICAL REPLAY
@@ -442,10 +440,7 @@ export default function Terminal() {
         <div className="title-row">
           <div>
             <div className="eyebrow">CAISO / NP15 DAY-AHEAD MARKET</div>
-            <h1>{tab === "Overview" ? "The grid, in perspective." : tab}</h1>
-            <p className="sub">
-              Observed markets. Measured forecasts. Explicit uncertainty.
-            </p>
+            <h1>{tab}</h1>
           </div>
           <div className="selectors">
             <label>
@@ -534,7 +529,7 @@ export default function Terminal() {
             <section className="panel">
               <div className="panel-head">
                 <div>
-                  <h2>Demand & market outlook</h2>
+                <h2>Forecast overview</h2>
                   <p>
                     {horizon}h direct forecast · final available week · {unit}
                   </p>
@@ -552,7 +547,7 @@ export default function Terminal() {
             </section>
             <div className="bottom-grid">
               <section className="panel">
-                <h2>A measured research system</h2>
+                <h2>Model evaluation</h2>
                 <p>
                   Expanding-window experiments compare calendar baselines,
                   regularized models, boosted trees and a small recurrent
@@ -567,7 +562,7 @@ export default function Terminal() {
                 </button>
               </section>
               <section className="panel">
-                <h2>Know the boundary</h2>
+                <h2>Limitations</h2>
                 <p>
                   Demand covers CAISO, not all California. Price is one
                   day-ahead trading hub, not real-time settlement. Historical
@@ -710,8 +705,7 @@ export default function Terminal() {
         )}
         {tab === "Scenario analysis" && (
           <section className="panel">
-            <span className="tag">HYPOTHETICAL SENSITIVITY</span>
-            <h2>Change the historical level assumption</h2>
+            <h2>Scenario analysis</h2>
             <p>
               Scales observed lags, rolling means, rolling deviations and the
               seasonal anchor; runs the same fitted model again. This is feature
@@ -758,7 +752,7 @@ export default function Terminal() {
         )}
         {tab === "Explainability" && (
           <section className="panel">
-            <h2>Which features improved validation accuracy?</h2>
+            <h2>Feature importance</h2>
             {controls}
             <p>
               Permutation importance measured as the increase in validation MAE
@@ -844,11 +838,7 @@ export default function Terminal() {
         )}
         {tab === "Research findings" && (
           <section className="panel research">
-            <span className="tag">REPRODUCIBLE RESEARCH / V0.1</span>
-            <h2>
-              A Reproducible Framework for California Electricity Demand and
-              Price Forecasting
-            </h2>
+            <h2>Research report</h2>
             <p>
               The report contains dataset quality, real exploratory figures,
               baseline comparisons, direct-horizon validation, interval coverage
@@ -881,7 +871,7 @@ export default function Terminal() {
           <span>
             CAISO OASIS · UTC CANONICAL / AMERICA–LOS ANGELES CALENDAR
           </span>
-          <span>RESEARCH BUILD 0.1</span>
+          <span>HISTORICAL REPLAY</span>
         </footer>
       </main>
     </div>

@@ -268,6 +268,14 @@ input[type="date"] {
   margin-bottom: 24px;
   overflow: hidden;
 }
+.panel,
+.panel-head > div,
+.bottom-grid > *,
+.title-row > div,
+.controls,
+.selectors {
+  min-width: 0;
+}
 .panel h2 {
   font-size: 16px;
   font-weight: 500;
@@ -325,7 +333,7 @@ input[type="date"] {
 }
 .bottom-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 20px;
 }
 .bottom-grid .panel p {
@@ -363,6 +371,7 @@ input[type="date"] {
 }
 .controls select {
   min-width: 170px;
+  max-width: 100%;
 }
 .result {
   background: #182b1c;
@@ -382,6 +391,10 @@ input[type="date"] {
 .slider {
   max-width: 520px;
   margin: 24px 0;
+}
+.slider,
+.slider input {
+  min-width: 0;
 }
 .slider input {
   accent-color: var(--lime);
@@ -508,6 +521,83 @@ footer {
   }
   .chart-footer {
     flex-direction: column;
+  }
+}
+@media (max-width: 820px) {
+  .shell {
+    display: block;
+  }
+  aside {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand i,
+  .navlabel,
+  .sidebar-bottom {
+    display: none;
+  }
+  nav {
+    display: flex;
+    overflow-x: auto;
+    margin-top: 18px;
+  }
+  nav button {
+    white-space: nowrap;
+    width: auto;
+    font-size: 11px;
+    padding: 10px;
+  }
+  .navicon {
+    display: none;
+  }
+  main {
+    margin: 0;
+    width: 100%;
+    padding: 0 16px;
+  }
+  header {
+    height: 55px;
+    font-size: 7px;
+  }
+  .badge {
+    font-size: 6px;
+  }
+  .title-row {
+    margin: 26px 0;
+  }
+  .kpis {
+    gap: 10px;
+  }
+  .kpis article {
+    padding: 15px;
+  }
+  .kpis strong {
+    font-size: 25px;
+  }
+  .metric-label {
+    font-size: 7px;
+  }
+  .panel {
+    padding: 18px;
+  }
+  .bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .panel-head {
+    flex-direction: column;
+  }
+  .chart {
+    height: 300px;
+  }
+  footer {
+    font-size: 6px;
+  }
+  footer span:nth-child(2) {
+    display: none;
   }
 }
 @media (max-width: 700px) {
