@@ -402,19 +402,7 @@ export default function Terminal() {
               className={t === tab ? "active" : ""}
               onClick={() => setTab(t)}
             >
-              <span className="navicon">
-                {i === 0 ? (
-                  <Activity size={16} />
-                ) : i === 1 ? (
-                  <Database size={16} />
-                ) : i === 2 ? (
-                  <FlaskConical size={16} />
-                ) : i === 6 ? (
-                  <ShieldCheck size={16} />
-                ) : (
-                  <Layers size={16} />
-                )}
-              </span>
+              <span className="navicon">{String(i + 1).padStart(2, "0")}</span>
               {t}
             </button>
           ))}
