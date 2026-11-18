@@ -423,7 +423,7 @@ export default function Terminal() {
           </span>
           <a className="portfolio-return" href="https://rjbassig.dev/" aria-label="Back to Randall's Portfolio">
             <img src="/portfolio-knight.png" alt="" />
-            <span aria-hidden="true">↗</span>
+            <span aria-hidden="true">&gt;</span>
             <span className="portfolio-tooltip" role="tooltip">Back to Randall's Portfolio</span>
           </a>
         </header>
