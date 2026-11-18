@@ -421,9 +421,11 @@ export default function Terminal() {
           <span>
             GRIDCAST <span className="slash">/</span> CALIFORNIA
           </span>
-          <div className="badge">
-            <span className="dot" /> HISTORICAL REPLAY
-          </div>
+          <a className="portfolio-return" href="https://rjbassig.dev/" aria-label="Back to Randall's Portfolio">
+            <img src="/portfolio-knight.png" alt="" />
+            <span aria-hidden="true">↗</span>
+            <span className="portfolio-tooltip" role="tooltip">Back to Randall's Portfolio</span>
+          </a>
         </header>
         <div className="title-row">
           <div>
